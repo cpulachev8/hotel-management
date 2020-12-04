@@ -5,6 +5,7 @@ import com.infosis.hotel.service.impl.RoomServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -34,11 +32,16 @@ public class RoomControllerTests {
   @Mock
   private RoomServiceImpl roomServiceImpl;
 
-  @Autowired
+  @InjectMocks
+  private RoomController controller;
+
   private MockMvc mockMvc;
 
   @BeforeEach
   public void setUp() {
+    mockMvc = MockMvcBuilders
+            .standaloneSetup(controller)
+            .build();
   }
 
   @Test
@@ -62,7 +65,7 @@ public class RoomControllerTests {
     mockMvc.perform(
             get("/api/rooms").param("status", "Libre").param("type", "Normal")
             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isOk());
             //.andExpect(jsonPath("$[0].roomId", is(room.getRoomId())));
   }
 
